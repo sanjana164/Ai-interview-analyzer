@@ -6,7 +6,9 @@ const app = express()
 app.use(express.json()) // middleware
 app.use(cookieParser()) // middleware to parse cookies from incoming requests
 
-const allowedOrigins = ["http://localhost:5173"]
+const allowedOrigins = ["http://localhost:5173",
+  "https://sanjana164-aiinterviewanalyzer-79ikd99td-sanjana164s-projects.vercel.app"
+]
 app.use((req, res, next) => {
   const origin = req.headers.origin
   if (allowedOrigins.includes(origin)) {
