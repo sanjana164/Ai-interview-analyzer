@@ -1,0 +1,418 @@
+// ── Loading Screen Styles ─────────────────────────────────────────────────────
+
+$bg-page: #0d1117;
+$bg-card: #161b22;
+$accent: #ff2d78;
+$text-primary: #e6edf3;
+$text-muted: #7d8590;
+
+.loading-screen {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: $bg-page;
+    gap: 2rem;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 2rem;
+
+    h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: $text-primary;
+        text-align: center;
+        margin: 0;
+    }
+}
+
+// ── Animated Loader Container ─────────────────────────────────────────────────
+.loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 280px;
+}
+
+// ── Animated Character ────────────────────────────────────────────────────────
+.character {
+    width: 100px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    animation: bounce 2s ease-in-out infinite;
+    position: relative;
+}
+
+// Character Head
+.character__head {
+    width: 60px;
+    height: 65px;
+    background: linear-gradient(135deg, $accent 0%, rgba($accent, 0.8) 100%);
+    border-radius: 50% 50% 45% 45%;
+    position: relative;
+    box-shadow: 0 4px 12px rgba($accent, 0.3);
+    animation: head-tilt 2s ease-in-out infinite;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        width: 8px;
+        height: 12px;
+        background-color: #0d1117;
+        border-radius: 50%;
+        top: 20px;
+        left: 15px;
+        animation: blink-left 1.4s steps(2) infinite;
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        width: 8px;
+        height: 12px;
+        background-color: #0d1117;
+        border-radius: 50%;
+        top: 20px;
+        right: 15px;
+        animation: blink-right 1.4s steps(2) infinite 0.1s;
+    }
+}
+
+// Character Eyes Container
+.character__eyes {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 16px;
+}
+
+// Character Eye
+.character__eye {
+    width: 8px;
+    height: 12px;
+    background-color: white;
+    border-radius: 50%;
+    animation: look-around 3s ease-in-out infinite;
+}
+
+// Character Mouth
+.character__mouth {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 6px;
+    border: 2px solid white;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    animation: smile 2s ease-in-out infinite;
+}
+
+// Character Body
+.character__body {
+    width: 40px;
+    height: 45px;
+    background: linear-gradient(180deg, rgba($accent, 0.6) 0%, rgba($accent, 0.4) 100%);
+    border-radius: 8px;
+    margin-top: -8px;
+    position: relative;
+    animation: body-sway 3s ease-in-out infinite;
+}
+
+// Character Arms
+.character__arms {
+    position: absolute;
+    top: 12px;
+    left: -30px;
+    width: 100px;
+    height: 8px;
+    display: flex;
+    justify-content: space-between;
+    animation: wave-arms 1.5s ease-in-out infinite;
+}
+
+.character__arm {
+    width: 20px;
+    height: 6px;
+    background-color: rgba($accent, 0.8);
+    border-radius: 3px;
+    transform-origin: center;
+}
+
+.character__arm:first-child {
+    animation: wave-left 1.5s ease-in-out infinite;
+}
+
+.character__arm:last-child {
+    animation: wave-right 1.5s ease-in-out infinite;
+}
+
+// ── Cute Spinner Animation ────────────────────────────────────────────────────
+.spinner {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    // Outer rotating ring
+    &::before {
+        content: '';
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        border: 4px solid transparent;
+        border-top-color: $accent;
+        border-right-color: $accent;
+        border-radius: 50%;
+        animation: spin 1.2s linear infinite;
+    }
+
+    // Inner rotating ring (opposite direction)
+    &::after {
+        content: '';
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        border: 3px solid transparent;
+        border-bottom-color: rgba($accent, 0.6);
+        border-left-color: rgba($accent, 0.6);
+        border-radius: 50%;
+        animation: spin-reverse 1.8s linear infinite;
+    }
+}
+
+// ── Loading Bar Animation ─────────────────────────────────────────────────────
+.loading-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: rgba($text-muted, 0.15);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        height: 100%;
+        width: 40%;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            $accent 25%,
+            $accent 75%,
+            transparent 100%
+        );
+        animation: slide-bar 1.5s ease-in-out infinite;
+        border-radius: 999px;
+        box-shadow: 0 0 12px rgba($accent, 0.5);
+    }
+}
+
+// ── Loading Text Animation ────────────────────────────────────────────────────
+.loading-text {
+    color: $text-muted;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    animation: fade-dots 1.4s steps(4) infinite;
+}
+
+// ── Keyframe Animations ───────────────────────────────────────────────────────
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes head-tilt {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-5deg);
+    }
+    75% {
+        transform: rotate(5deg);
+    }
+}
+
+@keyframes blink-left {
+    0%, 10%, 20%, 100% {
+        height: 12px;
+    }
+    15% {
+        height: 2px;
+    }
+}
+
+@keyframes blink-right {
+    0%, 10%, 20%, 100% {
+        height: 12px;
+    }
+    15% {
+        height: 2px;
+    }
+}
+
+@keyframes look-around {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-4px);
+    }
+    75% {
+        transform: translateX(4px);
+    }
+}
+
+@keyframes smile {
+    0%, 100% {
+        height: 6px;
+        opacity: 1;
+    }
+    50% {
+        height: 8px;
+        opacity: 0.8;
+    }
+}
+
+@keyframes body-sway {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-2deg);
+    }
+    75% {
+        transform: rotate(2deg);
+    }
+}
+
+@keyframes wave-left {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(-45deg);
+    }
+}
+
+@keyframes wave-right {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(45deg);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin-reverse {
+    from {
+        transform: rotate(360deg);
+    }
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+@keyframes slide-bar {
+    0% {
+        left: -40%;
+    }
+    50% {
+        left: 100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+@keyframes fade-dots {
+    0%,
+    20% {
+        content: 'Loading';
+    }
+    25%,
+    45% {
+        content: 'Loading.';
+    }
+    50%,
+    70% {
+        content: 'Loading..';
+    }
+    75%,
+    100% {
+        content: 'Loading...';
+    }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 640px) {
+    .loading-screen {
+        gap: 1.5rem;
+
+        h1 {
+            font-size: 1.25rem;
+        }
+    }
+
+    .character {
+        width: 80px;
+        height: 100px;
+    }
+
+    .character__head {
+        width: 50px;
+        height: 55px;
+
+        &::before,
+        &::after {
+            width: 6px;
+            height: 10px;
+        }
+    }
+
+    .character__body {
+        width: 35px;
+        height: 38px;
+    }
+
+    .spinner {
+        width: 64px;
+        height: 64px;
+
+        &::before {
+            width: 64px;
+            height: 64px;
+        }
+
+        &::after {
+            width: 48px;
+            height: 48px;
+        }
+    }
+}
