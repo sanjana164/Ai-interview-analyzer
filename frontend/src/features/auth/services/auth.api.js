@@ -4,6 +4,10 @@ const api = axios.create({
     baseURL:'http://localhost:3000',
     withCredentials:true
 })
+
+api.defaults.headers.common['Accept'] = 'application/json'
+api.defaults.headers.common['Content-Type'] = 'application/json'
+
 export async function register({username,email,password}){
 
     try {
