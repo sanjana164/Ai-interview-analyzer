@@ -57,3 +57,4 @@ export const generateResumePdf = async ({ interviewReportId }) => {
 
     return response.data
 }
+console.log("API URL:", import.meta.env.VITE_API_URL);

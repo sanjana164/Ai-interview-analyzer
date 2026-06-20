@@ -6,12 +6,14 @@ const app = express()
 app.use(express.json()) // middleware
 app.use(cookieParser()) // middleware to parse cookies from incoming requests
 
-const allowedOrigins = ["http://localhost:5173",
- "https://sanjana164-aiinterviewanalyzer-iu0qes3fh-sanjana164s-projects.vercel.app/login"
-]
+// Allowed origins can be provided via env var (comma-separated), or fallback to common dev origin.
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim())
+  : ["http://localhost:5173"]
+
 app.use((req, res, next) => {
   const origin = req.headers.origin
-  if (allowedOrigins.includes(origin)) {
+  if (origin && allowedOrigins.includes(origin)) {
     res.header("Access-Control-Allow-Origin", origin)
     res.header("Access-Control-Allow-Credentials", "true")
     res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
@@ -19,10 +21,16 @@ app.use((req, res, next) => {
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept, Authorization"
     )
-  }
 
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(204)
+    if (req.method === "OPTIONS") {
+      return res.sendStatus(204)
+    }
+  } else if (origin) {
+    console.warn(`Blocked CORS request from origin: ${origin}`)
+    // If origin is present but not allowed, explicitly deny preflight
+    if (req.method === "OPTIONS") {
+      return res.sendStatus(403)
+    }
   }
 
   next()

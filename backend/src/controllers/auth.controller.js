@@ -6,6 +6,7 @@ const tokenBlacklistModel = require("../models/blacklist.model")
 async function registerUserController(req , res) {
     
     const {username , email , password} = req.body
+    const normalizedEmail = email && email.trim().toLowerCase()
     if(!username || !email || !password)
     {
         return res.status(400).json({
@@ -13,7 +14,7 @@ async function registerUserController(req , res) {
         })
     }
     const isUserAlreadyExist = await userModel.findOne({
-        $or:[{username},{email}]
+        $or:[{username},{email: normalizedEmail}]
     })
 
     if(isUserAlreadyExist)
@@ -26,7 +27,7 @@ async function registerUserController(req , res) {
     const hash = await bcrypt.hash(password, 10)
     const user = await userModel.create({
         username ,
-        email,
+        email: normalizedEmail,
         password : hash
     })
 
@@ -38,8 +39,8 @@ async function registerUserController(req , res) {
 
     res.cookie("token", token, {
         httpOnly: true,
-        sameSite: "none",
-        secure: true,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: process.env.NODE_ENV === 'production',
         path: "/",
         maxAge: 24 * 60 * 60 * 1000
     })
@@ -56,8 +57,9 @@ async function registerUserController(req , res) {
 
 async function loginUserController(req, res){
     const {email , password} = req.body
+    const normalizedEmail = email && email.trim().toLowerCase()
     
-    console.log("Login attempt with:", {email, passwordLength: password?.length})
+    console.log("Login attempt with:", {email: normalizedEmail, passwordLength: password?.length})
     
     // Validate input
     if(!email || !password)
@@ -69,12 +71,12 @@ async function loginUserController(req, res){
     }
     
     try{
-        const user = await userModel.findOne({email})
+        const user = await userModel.findOne({email: normalizedEmail})
         console.log("User found:", user ? "Yes" : "No")
         
         if(!user)
         {
-            console.log("No user found with email:", email)
+            console.log("No user found with email:", normalizedEmail)
             return res.status(400).json({
                 message: "Invalid email or password"
             })
@@ -86,7 +88,7 @@ async function loginUserController(req, res){
         
         if(!isPasswordValid)
         {
-            console.log("Password mismatch for user:", email)
+                        console.log("Password mismatch for user:", normalizedEmail)
             return res.status(400).json({
               message : "Invalid email or password"
             })
@@ -99,8 +101,8 @@ async function loginUserController(req, res){
         )
         res.cookie("token", token, {
             httpOnly: true,
-            sameSite: "none",
-            secure: false,
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            secure: process.env.NODE_ENV === 'production',
             path: "/",
             maxAge: 24 * 60 * 60 * 1000
         })

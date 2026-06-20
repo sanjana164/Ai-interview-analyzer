@@ -8,7 +8,8 @@ export const useAuth = () => {
     const handlelogin = async ({email,password}) => {
         setLoading(true)
         try{
-            const data = await login({email,password})
+            const normalizedEmail = email && email.trim().toLowerCase()
+            const data = await login({email: normalizedEmail,password})
             setUser(data.user)
             return data
         }catch(err){
@@ -22,7 +23,8 @@ export const useAuth = () => {
     const handleRegister = async ({username,email,password}) => {
         setLoading(true)
         try{
-            const data = await register({username,email,password})
+            const normalizedEmail = email && email.trim().toLowerCase()
+            const data = await register({username,email: normalizedEmail,password})
             setUser(data.user)
         }catch(err){
             console.log(err)
