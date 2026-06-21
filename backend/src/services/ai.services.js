@@ -167,22 +167,34 @@ Job Description: ${jobDescription}`;
 
 
 async function generatePdfFromHtml(htmlContent) {
-    const browser = await puppeteer.launch()
-    const page = await browser.newPage();
-    await page.setContent(htmlContent, { waitUntil: "networkidle0" })
+    let browser;
+    try {
+        browser = await puppeteer.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        })
+        const page = await browser.newPage();
+        await page.setContent(htmlContent, { waitUntil: "networkidle0" })
 
-    const pdfBuffer = await page.pdf({
-        format: "A4", margin: {
-            top: "20mm",
-            bottom: "20mm",
-            left: "15mm",
-            right: "15mm"
+        const pdfBuffer = await page.pdf({
+            format: "A4", margin: {
+                top: "20mm",
+                bottom: "20mm",
+                left: "15mm",
+                right: "15mm"
+            }
+        })
+
+        await browser.close()
+
+        return pdfBuffer
+    } catch (error) {
+        console.error("Error in generatePdfFromHtml:", error)
+        if (browser) {
+            await browser.close().catch(() => {})
         }
-    })
-
-    await browser.close()
-
-    return pdfBuffer
+        throw new Error(`PDF generation failed: ${error.message}`)
+    }
 }
 
 
@@ -205,21 +217,32 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
                         The resume should not be so lengthy, it should ideally be 1-2 pages long when converted to PDF. Focus on quality rather than quantity and make sure to include all the relevant information that can increase the candidate's chances of getting an interview call for the given job description.
                     `
 
-    const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: prompt,
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: zodToJsonSchema(resumePdfSchema),
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-3-flash-preview",
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: zodToJsonSchema(resumePdfSchema),
+            }
+        })
+
+        if (!response.text) {
+            throw new Error("No response received from AI service")
         }
-    })
 
+        const jsonContent = JSON.parse(response.text)
 
-    const jsonContent = JSON.parse(response.text)
+        if (!jsonContent.html) {
+            throw new Error("AI response missing HTML content")
+        }
 
-    const pdfBuffer = await generatePdfFromHtml(jsonContent.html)
+        const pdfBuffer = await generatePdfFromHtml(jsonContent.html)
 
-    return pdfBuffer
-
+        return pdfBuffer
+    } catch (error) {
+        console.error("Error in generateResumePdf:", error)
+        throw error
+    }
 }
 module.exports = { generateInterviewReport , generateResumePdf};
